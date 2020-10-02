@@ -38,3 +38,28 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # #########%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+# TODO 1) Leer csv de los datasets
+
+library(tidyverse)
+library(lubridate)
+library(nycflights13)
+
+bitcoin_price = read.csv("bitcoin_price.csv")
+bitcoin_dataset = read.csv("bitcoin_dataset.csv")
+
+summary(bitcoin_price)  
+bitcoin_dataset$btc_market_price
+
+head(bitcoin_price)
+head(bitcoin_dataset)
+# TODO 2) Mergear en 1 sola datset
+
+# TODO 3) Agregar una columna con las direcciones de precio
+# TODO 4) Integrar codigo de clasification stock market y ver resultados con algoritmo loco!
+# TODO 5) Enjoy your money!
+dates <- c("May 27 1984", "July 7 2005")
+betterDates <- as.Date(dates, "%B %d %Y")
+
+dates <- c("05/27/84", "07/07/05", "08/17/20")
+betterDates <- as.Date(dates, "%m/%d/%y")
