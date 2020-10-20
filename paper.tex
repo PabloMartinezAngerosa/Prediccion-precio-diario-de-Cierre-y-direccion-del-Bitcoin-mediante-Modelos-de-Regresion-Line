@@ -1,0 +1,190 @@
+\documentclass[a4paper,12pt,twocolumn]{article}
+\date{ }
+\title{\textbf{Predicción del precio de cierre del Bitcoin con Modelos Lineales Aditivos Generalizados GAM}}
+\author{Pablo Martinez Angerosa, Vanessa Alcalde}
+
+\newtheorem{dfn}{Definición}
+\renewcommand{\labelenumi}{P.\theenumi}
+\renewcommand{\abstractname}{Resumen}
+\renewcommand{\refname}{Bibliografía}
+\begin{document}
+
+
+\onecolumn
+
+\maketitle
+\begin{abstract}
+Vivimos en una época donde los cambios suceden en forma vertiginosa. Kurzweil\cite{RayKurzweil} uno de los futuristas tecnológicos mas impresionantes de nuestros tiempos, definió la realidad de la tecnología de la información como algo que sucede en forma exponencial. Actualmente grandes empresas tecnológicas de vanguardia junto al apoyo de inversores visionarios se encuentran pujando por la lucha de la supremacía cuántica y el despegue definitivo de la computación cuántica junto a el  acelerado poder computacional que esta conlleva. Ante todos estos cambios venideros es necesario preguntar y analizar ¿cuanta información vamos a ser capaces de crear? Y sobre todo, en tal caso, ¿bajo que condiciones la vamos a crear?. Si lo hacemos en la forma correcta, como tal “cambio de paradigma”~\cite{LaSingularidad} lo define, de un modo: protegido, público y distribuido,  no hay duda que estaremos creando el alicate que desmantele el alambre de púas alrededor de la propiedad intelectual~\cite{ManifestoCriptoAnarquista}.
+\begin{quotation}
+“ los hombres no se hacen a partir de victorias fáciles, sino en base a grandes derrotas”
+\begin{flushright}
+{\it - Sir Ernest Henry }
+\end{flushright}
+\end{quotation}
+
+\end{abstract}
+\vspace{1.0cm}
+
+\twocolumn
+
+\section{Introducción}
+ Satoshi Nakamoto en 2008 presentó una tecnología revolucionaria\cite{Satoshi}, que cambiaría la historia de la humanidad por siempre, mediante la publicación de un artículo que describía un sistema P2P (peer-to-peer) de dinero digital, llamado Bitcoin. 
+
+El Bitcoin no es un simple cambio de modalidad, es un cambio de paradigma, que ha cobrado un impulso tal que, ha dejado de ser un tema de entusiastas en la criptografía a ser una realidad diaria, una opción de inversión real y parte de las noticias. Asimismo es el impulsor de una nueva tecnología que es el fundamento tecnológico de la criptomoneda, llamada la cadena de bloques~\cite{Blockchain} (Blockchain) y que actualmente esta revolucionando y ampliando las posibilidades del mundo tecnológico mas allá de las criptos y el fintech.~\cite{Bitcoin_revolucion_monetaria}. 
+
+Esta moneda digital, fue creada en su propia arquitectura como una red descentralizada, un libro abierto de balance contable, donde todas las transacciones son públicas y verificadas mediante un proceso criptográfico realizado por los nodos de la misma red (miners), sin la necesidad de una casa centralizadora o un tercer interesado como agente de control y validación\cite{Satoshi}. 
+
+
+
+
+\subsection{Descripción de los datos}
+\textbf{La base de datos consta de 16 variables de polución del aire, variables socioeconómicas y meteorológicas
+de 60 ciudades de Estados Unidos en 1963.}
+\linebreak
+Es importante aclarar que todas las variables son de carácter cuantitativo.
+\begin{table*}[!hbt]
+\centering
+\caption{Descripción de variables en la base de datos.}
+\label{tab-variables_bd}
+\begin{tabular}{|l|l|}
+\hline Nombre de variables & Descripción\\
+\hline PREC & Promedio anual de precipitación (en pulgadas).\\
+\hline JANT & Promedio de temperatura del mes de Enero (en Farenheit).\\
+\hline JULT & Promedio de temperatura del mes de Julio (en Farenheit).\\
+\hline OVR65 & Porcentaje de población mayor de 65 años en áreas metropolitanas.\\
+\hline POPN & Promedio del tamaño del hogar.\\
+\hline EDUC & Mediana de años de escolarización completos para mayores de 22 años.\\
+\hline HOUS & \% de viviendas en buenas condiciones con todos los servicios.\\
+\hline DENS & Población por milla cuadrada en áreas urbanas en 1960.\\
+\hline NONW & \% de población no blanca en áreas urbanas en 1960.\\
+\hline WWDRK & \% de trabajadores en ocupaciones “no manuales”.\\
+\hline POOR & \% de familias con ingresos anuales menores \$3000.\\
+\hline HC & Polución potencial relativa de hidrocarbono.\\
+\hline NOX & Polución potencial relativa de óxido nítrico.\\
+\hline SO & Polución potencial relativa de dióxido de azufre.\\
+\hline HUMID & Promedio anual del porcentaje de humedad relativa a las 13 horas.\\
+\hline MORT & Tasa de mortalidad cada 100.000 habitantes.\\
+\hline
+\end{tabular}
+\end{table*}
+%
+
+En la Tabla~\ref{tab-variables_bd} se muestra la descripción de las variables en la base de datos.\\
+
+\begin{table}[!hbt]
+\centering
+\caption{Correlación entre variables.}
+\label{tab-correlacion}
+\begin{tabular}{|l|l|}
+\hline Variables & Correlación\\
+\hline Nox - HC & 0.98\\ 
+\hline EDUC - WWDRK & 0.7\\ 
+\hline POOR - NONW & 0.7\\ 
+\hline POOR - HOUS & -0.68\\
+\hline
+\end{tabular}
+\end{table}
+%
+
+Las variables que tienen un indice alto de correlación están listadas en la Tabla~\ref{tab-correlacion}. Esta alta correlación implica que una variable explica a la otra y sera tomado en consideración a la hora de optimizar las variables en el modelo de predicción. Las demás variables no presentan altas correlaciones entre ellas.\\
+
+\section{El Modelo}
+\textbf{Ahora que esta definido el objeto significado. Surgen siguentes preguntas.. ¿Que tan grande es?, ¿cuando una imagen  no es ruido?, ¿existe un indice para un algoritmo efectivo?}
+The following questions ...\\ Answer P.\ref{must} and any two from the rest.
+\begin{enumerate}
+\item Whether the following statements are true or false?\label{must}
+\begin{enumerate}
+\item Water is composed of oxygen and hydrogen.
+\item Scientific symbol of iron is Hg.
+\item The value of the gravitational acceleration is 10.
+\end{enumerate}
+\item What is photosynthesis?
+\item What do you mean by magnetism?
+\item State the Newton’s law of motion.
+\end{enumerate}
+abblablba
+\subsection{Las variables explicativas }
+\textbf{Explicite si inlcuye todas las variables disponibles y de no hacerlo explique elporque de su decisión} 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sagittis enim ac ornare euismod. Curabitur vehicula mauris id ante luctus, quis hendrerit sem sagittis. Vestibulum euismod metus ut urna fermentum, ac hendrerit purus rutrum. Integer sit amet nibh nibh. Mauris dignissim neque quam, ut volutpat dolor vulputate iaculis. Curabitur fermentum, magna sed lacinia placerat, lectus mauris mollis metus, ut ornare ligula erat nec nunc. Vestibulum non nibh posuere, gravida magna sed, sodales mauris. Integer congue, ante in aliquam eleifend, ex orci tempor turpis, in congue sem justo vel tortor. Aliquam tellus nunc, placerat vel porta in, rhoncus ut eros. Donec \footnote{They are sisters.} blandit suscipit mollis. Aenean\footnote{They are
+friends.\label{fn:friends}} ullamcorper erat nec viverra pulvinar. 
+\subsection{Pruebas de significación del modelo y los parámetros }
+\textbf{Pruebas de significación del modelo y de los parámetros. En las distintas pruebasde hipótesis que  realice plantee las hipótesis nula y alternativa  así  como  elestadístico que utiliza}
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+\begin{table}[!hbt]
+\centering
+\caption{Obtained marks.}
+\label{tab-marks}
+\begin{tabular}{|l|c|c|c|c|}
+\hline Name & Math & Phy & Chem & English\\
+\hline Robin & 80 & 68 & 60 & 57\\
+\hline Julie & 72 & 62 & 66 & 63\\
+\hline Robert & 75 & 70 & 71 & 69\\
+\hline
+\end{tabular}
+\end{table}
+%
+Table~\ref{tab-marks} shows the ...
+Metodo de muestreo y saca concluciones. 
+
+\begin{dfn}[\bf Center of Mass]\label{dfn-cm}
+This is the point at which the entire mass of
+a body of uniform density can be assumed to
+be concentrated.
+\end{dfn}
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+\subsection{Análisis de multicolinealidad.}
+\textbf{Análisis Indice de Significado como serie temporal. Es posible que sea una serie estacionaria. Tendra un comportamiento en probabilidad invariante en el tiempo. ¿Es posible modelarlo para poder predecir?}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sagittis enim ac ornare euismod. Curabitur vehicula mauris id ante luctus, quis hendrerit sem sagittis. Vestibulum euismod metus ut urna fermentum, ac hendrerit purus rutrum. Integer sit amet nibh nibh. Mauris dignissim neque quam, ut volutpat dolor vulputate iaculis. Curabitur fermentum, magna sed lacinia placerat, lectus mauris mollis metus, ut ornare ligula erat nec nunc. Vestibulum non nibh posuere, gravida magna sed, sodales mauris. Integer congue, ante in aliquam eleifend, ex orci tempor turpis, in congue sem justo vel tortor. Aliquam tellus nunc, placerat vel porta in, rhoncus ut eros. Donec blandit suscipit mollis. Aenean ullamcorper erat nec viverra pulvinar. 
+\begin{dfn}[\bf Center of Mass]\label{dfn-cm}
+This is the point at which the entire mass of
+a body of uniform density can be assumed to
+be concentrated.
+\end{dfn} 
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+\subsection{Selección de modelo y variables}
+\textbf{Se presentan el concepto de nivel de ruido como serie temporal.Buscando la disimilaridad  >=10.Diseño de muestreo elegido}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sagittis enim ac ornare euismod. Curabitur vehicula mauris id ante luctus, quis hendrerit sem sagittis. Vestibulum euismod metus ut urna fermentum, ac hendrerit purus rutrum. Integer sit amet nibh nibh. Mauris dignissim neque quam, ut volutpat dolor vulputate iaculis. Curabitur fermentum, magna sed lacinia placerat, lectus mauris mollis metus, ut ornare ligula erat nec nunc. Vestibulum non nibh posuere, gravida magna sed, sodales mauris. Integer congue, ante in aliquam eleifend, ex orci tempor turpis, in congue sem justo vel tortor. Aliquam tellus nunc, placerat vel porta in, rhoncus ut eros. Donec blandit suscipit mollis. Aenean ullamcorper erat nec viverra pulvinar. 
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+
+\subsection{Control de los supuestos del modelo: normalidad y homoscedasticidad}
+\textbf{Concepto de serie mulitivariada.¿Existe una relacion entre ellos en el tiempo?}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sagittis enim ac ornare euismod. Curabitur vehicula mauris id ante luctus, quis hendrerit sem sagittis. Vestibulum euismod metus ut urna fermentum, ac hendrerit purus rutrum. Integer sit amet nibh nibh. Mauris dignissim neque quam, ut volutpat dolor vulputate iaculis. Curabitur fermentum, magna sed lacinia placerat, lectus mauris mollis metus, ut ornare ligula erat nec nunc. Vestibulum non nibh posuere, gravida magna sed, sodales mauris. Integer congue, ante in aliquam eleifend, ex orci tempor turpis, in congue sem justo vel tortor. Aliquam tellus nunc, placerat vel porta in, rhoncus ut eros. Donec blandit suscipit mollis. Aenean ullamcorper erat nec viverra pulvinar. 
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+\subsection{Análisis de posibles observaciones atípicas y/o influyentes}
+\textbf{Concepto de serie mulitivariada.¿Existe una relacion entre ellos en el tiempo?}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sagittis enim ac ornare euismod. Curabitur vehicula mauris id ante luctus, quis hendrerit sem sagittis. Vestibulum euismod metus ut urna fermentum, ac hendrerit purus rutrum. Integer sit amet nibh nibh. Mauris dignissim neque quam, ut volutpat dolor vulputate iaculis. Curabitur fermentum, magna sed lacinia placerat, lectus mauris mollis metus, ut ornare ligula erat nec nunc. Vestibulum non nibh posuere, gravida magna sed, sodales mauris. Integer congue, ante in aliquam eleifend, ex orci tempor turpis, in congue sem justo vel tortor. Aliquam tellus nunc, placerat vel porta in, rhoncus ut eros. Donec blandit suscipit mollis. Aenean ullamcorper erat nec viverra pulvinar. 
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+\section{Conclusión}
+\textbf{Introducción general de la practica. Algunos detalles generales de la puesta a punto.}
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+\subsection{Interpretación de los parámetros del modelo finalmente seleccionado.}
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sagittis enim ac ornare euismod. Curabitur vehicula mauris id ante luctus, quis hendrerit sem sagittis. Vestibulum euismod metus ut urna fermentum, ac hendrerit purus rutrum. Integer sit amet nibh nibh. Mauris dignissim neque quam, ut volutpat dolor vulputate iaculis. Curabitur fermentum, magna sed lacinia placerat, lectus mauris mollis metus, ut ornare ligula erat nec nunc. Vestibulum non nibh posuere, gravida magna sed, sodales mauris. Integer congue, ante in aliquam eleifend, ex orci tempor turpis, in congue sem justo vel tortor. Aliquam tellus nunc, placerat vel porta in, rhoncus ut eros. Donec blandit suscipit mollis. Aenean ullamcorper erat nec viverra pulvinar.
+
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+\textbf{tablas y gráficos}
+\subsection{Futuros pasos}
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sagittis enim ac ornare euismod. Curabitur vehicula mauris id ante luctus, quis hendrerit sem sagittis. Vestibulum euismod metus ut urna fermentum, ac hendrerit purus rutrum. Integer sit amet nibh nibh. Mauris dignissim neque quam, ut volutpat dolor vulputate iaculis. Curabitur fermentum, magna sed lacinia placerat, lectus mauris mollis metus, ut ornare ligula erat nec nunc. Vestibulum non nibh posuere, gravida magna sed, sodales mauris. Integer congue, ante in aliquam eleifend, ex orci tempor turpis, in congue sem justo vel tortor. Aliquam tellus nunc, placerat vel porta in, rhoncus ut eros. Donec blandit suscipit mollis. Aenean ullamcorper erat nec viverra pulvinar.
+
+Vestibulum molestie pellentesque fermentum. Proin eu imperdiet quam. Pellentesque pellentesque lacus massa, id bibendum enim viverra et. Morbi vitae urna eleifend, posuere justo nec, mattis augue. Sed nec nibh sit amet ante tempus mollis. Etiam in augue at nunc luctus commodo. Donec interdum tincidunt pretium. 
+\textbf{tablas y gráficos}
+
+%
+\begin{thebibliography}{0000}
+\bibitem[1]{Bitcoin_revolucion_monetaria}
+Federico Sangoi
+{\em Bitcoin. ¿Una revolución monetaria?}
+Universidad de Buenos Aires. Registro: 872.115
+%
+\bibitem[2]{regression_for_bitcoin_price}
+\newblock Azim Muhammad Fahmi et al.
+\newblock Regression based Analysis forBitcoinPrice Prediction.
+\bibitem[3]{Satoshi}
+Satoshi Nakamoto
+{\em Bitcoin: A Peer-to-Peer Electronic Cash System}, 2008.
+\bibitem[4]{Blockchain}
+Carlos Dolader Retmal et al.
+{\em La blockchain: fundamentos, aplicaciones y relación con otras tecnologías disruptivas}, Universitat Politécnica de Catalunya.
+
+
+\end{thebibliography}
+\end{document}

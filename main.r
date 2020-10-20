@@ -39,63 +39,202 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # #########%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-# TODO 1) Leer csv de los datasets
+
 
 library(tidyverse)
 library(lubridate)
 library(nycflights13)
 
-bitcoin_price = read.csv("bitcoin_price.csv")
-bitcoin_dataset = read.csv("bitcoin_dataset.csv")
+bitcoin_price = read.csv("Coinbase_BTCUSD_1h.csv")
 
-summary(bitcoin_price)  
-bitcoin_dataset$btc_market_price
+##################################
+# breve descriptiva de los datos #
+##################################
 
+
+summary(bitcoin_price) 
 head(bitcoin_price)
-head(bitcoin_dataset)
-# TODO 2) Mergear en 1 sola datset
+
+# revisamos que los datos no tengan faltanes
+which(is.na(bitcoin_price))
+
+##############################
+# ajuste de la base de datos #
+##############################
+
 
 # Creamos las columnas con los Lag agregando un 0 por iesimo lag
-Today = bitcoin_dataset$btc_market_price[176:length(bitcoin_dataset$btc_market_price)]
-Lag1 = c(0,Today)
-Lag2 = c(0,Lag1)
-Lag3 = c(0,Lag2)
-Lag4 = c(0,Lag3)
-Lag5 = c(0,Lag4)
+Today = bitcoin_price$Close
+Lag1 = Today[2:length(Today)]
+Lag2 = Today[3:length(Today)]
+Lag3 = Today[4:length(Today)]
+Lag4 = Today[5:length(Today)]
+Lag5 = Today[6:length(Today)]
 
-# Cortamos todas las entradas con 0 iniciales para comencar en el mismo i esimo momento
-Today = Today[6:length(Today)]
-Lag1 = Lag1[6:length(Lag1)]
-Lag2 = Lag2[6:length(Lag2)]
-Lag3 = Lag3[6:length(Lag3)]
-Lag4 = Lag4[6:length(Lag4)]
-Lag5 = Lag5[6:length(Lag5)]
 
 # Cortamos los extremos superiores para que tengan el mismo length
-Lag1 = Lag1[1:(length(Lag1)-1)]
-Lag2 = Lag2[1:(length(Lag2)-2)]
-Lag3 = Lag3[1:(length(Lag3)-3)]
-Lag4 = Lag4[1:(length(Lag4)-4)]
-Lag5 = Lag5[1:(length(Lag5)-5)]
+Today = Today[1:(length(Today)-5)]
+Lag1 = Lag1[1:(length(Lag1)-4)]
+Lag2 = Lag2[1:(length(Lag2)-3)]
+Lag3 = Lag3[1:(length(Lag3)-2)]
+Lag4 = Lag4[1:(length(Lag4)-1)]
+
+# Agregamos Volumen.BTC y Volumen.USD
+Volumen.BTC = bitcoin_price$Volume.BTC[1:(length(bitcoin_price$Volume.BTC)-5)]
+Volumen.USD = bitcoin_price$Volume.USD[1:(length(bitcoin_price$Volume.USD)-5)]
+
+# Base de datos para prediccion de precio de cierre en modelo continuo
+DataPrice = data.frame("Today"=Today, "Lag1"=Lag1, "Lag2"=Lag2, "Lag3"=Lag3, "Lag4"=Lag4,"Lag5"=Lag5, "Volumen.BTC"= Volumen.BTC, "Volumen.USD" = Volumen.USD)
+
+###################################
+# Base para prediccion categorica #
+###################################
+
+# pseudocodigo. #
+
+# definimos delta_del_precio
+# definimos precio_inicial = X_0
+
+# hacemos un for dese el primer precio de cierre hasta adelante
+  # cota_superior = precio_inicial + delta_del_precio.
+  # cota_inferior = precio_inicial - delta_del_precio
+  # si precio_actual >= cota_superior
+           # subio se agrega
+           # precio_inicial = precio_actual
+  # elseif precio_actual <= cota_inferior
+          # bajo se agrega
+          # precio_inicial = precio_actual
+  # precio_acumulado sumamos con el precio anterior
 
 
-DataPrice = data.frame("Today"=Today, "Lag1"=Lag1, "Lag2"=Lag2, "Lag3"=Lag3, "Lag4"=Lag4,"Lag5"=Lag5 )
+# delta en dolares
+delta_precio = 10
+precio_inicial = bitcoin_price$Close[length(bitcoin_price$Close)]
+precio_escalon = c() 
 
-# Creamos las direcciones de los precios diarios
-Direction = c(rep("Up",length(Today)))
+promedio_volumen.BTC = c()
+Volume.BTC = 0
 
-for(index in c(2:length(Today))){
-  Direction[index] = if(Today[index]> Today[index-1]) "Up" else "Down"
+promedio_volumen.USD = c()
+Volume.USD = 0
+
+horas_acumuladas = c()
+cantidad_horas = 0
+
+for(i in c(0:(length(bitcoin_price$Close) - 1 ))){
+  
+  cota_superior = precio_inicial + delta_precio
+  cota_inferior = precio_inicial - delta_precio
+  precio_actual = bitcoin_price$Close[length(bitcoin_price$Close)-i]
+  
+  cantidad_horas = cantidad_horas + 1 
+  Volume.BTC = Volume.BTC  + bitcoin_price$Volume.BTC[length(bitcoin_price$Volume.BTC)-i] 
+  Volume.USD = Volume.USD  + bitcoin_price$Volume.USD[length(bitcoin_price$Volume.USD)-i] 
+  
+  if (precio_actual >= cota_superior){
+    precio_escalon[length(precio_escalon)+1] = "Up"
+    precio_inicial = precio_actual
+    
+    promedio_volumen.BTC[length(promedio_volumen.BTC)+1] = Volume.BTC/cantidad_horas
+    promedio_volumen.USD[length(promedio_volumen.USD)+1] = Volume.USD/cantidad_horas
+    cantidad_horas[length(cantidad_horas)+1] = cantidad_horas
+    
+    cantidad_horas = 0
+    Volume.BTC = 0
+    Volume.USD = 0
+    
+  
+  }else if (precio_actual <= cota_inferior){
+    precio_escalon[length(precio_escalon)+1] = "Down"
+    precio_inicial = precio_actual
+    
+    promedio_volumen.BTC[length(promedio_volumen.BTC)+1] = Volume.BTC/cantidad_horas
+    promedio_volumen.USD[length(promedio_volumen.USD)+1] = Volume.USD/cantidad_horas
+    cantidad_horas[length(cantidad_horas)+1] = cantidad_horas
+    
+    cantidad_horas = 0
+    Volume.BTC = 0
+    Volume.USD = 0
+  }
 }
 
-# Hacemos el Dataframe Final    
-DataPrice = data.frame("Today"=Today, "Lag1"=Lag1, "Lag2"=Lag2, "Lag3"=Lag3, "Lag4"=Lag4,"Lag5"=Lag5 , "Direction" = Direction)
+
+DataAcumPrice = data.frame("index"= c(1:length(precio_escalon)), "Actual"=precio_escalon, "Prom.Volume.BTC"= promedio_volumen.BTC, "Prom.Volume.USD" = promedio_volumen.USD)
+
+# cambiamos el orden
+DataAcumPrice = DataAcumPrice %>% arrange(desc(index))
+
+
+# Creamos las columnas con los Lag agregando un 0 por iesimo lag
+Today = DataAcumPrice$Actual
+Lag1 = Today[2:length(Today)]
+Lag2 = Today[3:length(Today)]
+Lag3 = Today[4:length(Today)]
+Lag4 = Today[5:length(Today)]
+Lag5 = Today[6:length(Today)]
+
+
+# Cortamos los extremos superiores para que tengan el mismo length
+Today = Today[1:(length(Today)-5)]
+Lag1 = Lag1[1:(length(Lag1)-4)]
+Lag2 = Lag2[1:(length(Lag2)-3)]
+Lag3 = Lag3[1:(length(Lag3)-2)]
+Lag4 = Lag4[1:(length(Lag4)-1)]
+
+# Agregamos Volumen.BTC y Volumen.USD
+Prom.Volumen.BTC = DataAcumPrice$Prom.Volume.BTC[1:(length(DataAcumPrice$Prom.Volume.BTC)-5)]
+Prom.Volumen.USD = DataAcumPrice$Prom.Volume.USD[1:(length(DataAcumPrice$Prom.Volume.USD)-5)]
+
+# Base de datos para prediccion de precio de cierre en modelo continuo
+DataAcumPriceWithLag = data.frame("Today"=Today, "Lag1"=Lag1, "Lag2"=Lag2, "Lag3"=Lag3, "Lag4"=Lag4,"Lag5"=Lag5, "Prom.Volumen.BTC"= Prom.Volumen.BTC, "Prom.Volumen.USD" = Prom.Volumen.USD)
+
+# DataAcumPriceWithLag$Lag1 = as.factor(DataAcumPriceWithLag$Lag1)
+# DataAcumPriceWithLag$Lag2 = as.factor(DataAcumPriceWithLag$Lag2)
+# DataAcumPriceWithLag$Lag3 = as.factor(DataAcumPriceWithLag$Lag3)
+# DataAcumPriceWithLag$Lag4 = as.factor(DataAcumPriceWithLag$Lag4)
+# DataAcumPriceWithLag$Lag5 = as.factor(DataAcumPriceWithLag$Lag5)
+
+# # Creamos las direcciones de los precios diarios
+# Direction = c(rep("Up",length(Today)))
+# 
+# for(index in c(2:length(Today))){
+#   Direction[index] = if(Today[index]> Today[index-1]) "Up" else "Down"
+# }
+# 
+# # Hacemos el Dataframe Final    
+# DataPrice = data.frame("Today"=Today, "Lag1"=Lag1, "Lag2"=Lag2, "Lag3"=Lag3, "Lag4"=Lag4,"Lag5"=Lag5 , "Direction" = Direction)
 
 
 
-# DONE 3) Agregar una columna con las direcciones de precio
+library(glmulti)
 
-# TODO 4) Integrar codigo de clasification stock market y ver resultados con algoritmo loco!
+
+# separamos los dataset para test y entranamiento 
+dataprice.train = DataAcumPriceWithLag[1:floor(length(Today)*0.7),]
+dataprice.test = DataAcumPriceWithLag[(floor(length(Today)*0.7)+1):length(Today),]
+
+
+
+glm_fit3 = glmulti(
+  y = Today ~ .*.,
+  data =  dataprice.train,
+  family = binomial,
+  method = "g",
+  plotty = FALSE,
+  report = TRUE,
+  marginality = TRUE,
+  deltaB = 0,
+  deltaM = 0.01,
+  conseq = 6,
+  sexrate = 0.15,
+  imm = 0.2
+) 
+fit = glm_fit3@objects[[1]]
+glm.probs = predict(fit,dataprice.test, type="response")
+
+glm.pred = rep("Down",length(dataprice.test$Today))
+glm.pred[glm.probs >.5] = "Up"
+table(glm.pred ,dataprice.test$Today)
 
 
 
