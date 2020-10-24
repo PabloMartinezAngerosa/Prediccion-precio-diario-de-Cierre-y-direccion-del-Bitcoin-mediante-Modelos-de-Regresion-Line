@@ -69,29 +69,43 @@ variables_lag = c(
   )
 
 # recorremos todas las combinaciones posibles 
-lm_eval_first = "lmClose = lm(btc_close~ eth_open "
+lm_eval_first = "lmClose = lm(btc_close~  "
 lm_eval_end = ", dataprice.test)"
 
-pred.dataprice = c()
+
 RMSE_dataprice = c()
 MAPE_dataprice = c()
+models_fit = c()
 
 for (i in c(1:nrow(combinaciones_posibles))){
   lm_eval = ""
   for( variable in variables_lag[combinaciones_posibles[i,]==1]){
-    variable = paste("+ ", variable)
+    if(lm_eval == ""){
+      variable = paste(" ", variable)
+    } else {
+      variable = paste("+ ", variable)  
+    }
+    
     lm_eval = paste(lm_eval, variable)
   }
-  lm_eval = paste(lm_eval_first,lm_eval,lm_eval_end)  
-  # se ejecuta una instancia d ajuste del lmClose
-  eval(parse(text=lm_eval))
-  pred.dataprice[length(pred.dataprice) + 1] = predict(lmClose, dataprice.test, interval = "prediction")
-  # RMSE
-  RMSE_dataprice[length(RMSE_dataprice) + 1] = sqrt(sum((pred.dataprice[,1] - dataprice.test$btc_close )^2)/length(dataprice.test$btc_close))
-  # MAPE
-  MAPE_dataprice[length(MAPE_dataprice) + 1] = MAPE(pred.dataprice[,1], dataprice.test$btc_close)
-  
+  # nos aseguramos que el modelo tiene variables explicativas
+  if(lm_eval!=""){
+    lm_eval = paste(lm_eval_first,lm_eval,lm_eval_end)  
+    # se ejecuta una instancia d ajuste del lmClose
+    eval(parse(text=lm_eval))
+    pred.dataprice = predict(lmClose, dataprice.test, interval = "prediction")
+    # RMSE
+    RMSE_dataprice[length(RMSE_dataprice) + 1] = sqrt(sum((pred.dataprice[,1] - dataprice.test$btc_close )^2)/length(dataprice.test$btc_close))
+    # MAPE
+    MAPE_dataprice[length(MAPE_dataprice) + 1] = MAPE(pred.dataprice[,1], dataprice.test$btc_close)
+    # Guardamos el Modelo
+    models_fit[length(models_fit) + 1] = lm_eval
+  }
 }
+
+# Hacemos del dataframe de todos los modelos.
+info = data.frame("model" = models_fit, "RMSE" = RMSE_dataprice, "MAPE" = MAPE_dataprice )
+
 
 lmClose = lm(btc_close~ eth_open   +  btc_close_lag2 +  btc_close_lag4 +  btc_close_lag5 , dataprice.test)
 lmClose = lm(btc_close~ eth_open   +  btc_close_lag2 +  btc_close_lag3 +  btc_close_lag4 +  btc_close_lag5 , dataprice.test)
