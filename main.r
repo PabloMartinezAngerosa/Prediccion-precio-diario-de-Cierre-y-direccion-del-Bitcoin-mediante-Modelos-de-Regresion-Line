@@ -18,6 +18,7 @@ library(nortest)
 library(MASS)
 library(boot)
 library(glmulti)
+library(MLmetrics)
 
 ################
 # Source files #
@@ -34,24 +35,71 @@ dataprice.train = database_coins[(floor(length(database_coins$btc_trend)*0.03)+1
 dataprice.test = database_coins[1:floor(length(database_coins$btc_trend)*0.03),]
 
 
-# Buscamos todas las combinaciones con los 10 lagas de la BD y obtenemos el 
+# Buscamos todas las combinaciones con los 10 lags(close y vol.btc) y eth.open y eth.vol de la BD y obtenemos el 
 # ajuste que tiene mejor performance.
 
-combinaciones_posibles = crossing(var1 = 0:1, var2 = 0:1, var3 = 0:1,var4 = 0:1, var5 = 0:1)
-variables_lag = c("btc_close_lag1","btc_close_lag2","btc_close_lag3","btc_close_lag4","btc_close_lag5" )
+combinaciones_posibles = crossing(
+  var1 = 0:1, 
+  var2 = 0:1, 
+  var3 = 0:1,
+  var4 = 0:1, 
+  var5 = 0:1,
+  var6 = 0:1, 
+  var7 = 0:1, 
+  var8 = 0:1,
+  var9 = 0:1, 
+  var10 = 0:1,
+  var11 = 0:1,
+  var12 = 0:1
+  )
 
-lm_eval = ""
-for( variable in variables_lag[combinaciones_posibles[8,]==1]){
-  variable = paste("+ ", variable)
-  lm_eval = paste(lm_eval, variable)
-}
+variables_lag = c(
+  "btc_close_lag1",
+  "btc_close_lag2",
+  "btc_close_lag3",
+  "btc_close_lag4",
+  "btc_close_lag5",
+  "btc_vol_lag1",
+  "btc_vol_lag2",
+  "btc_vol_lag3",
+  "btc_vol_lag4",
+  "btc_vol_lag5",
+  "eth_open",
+  "eth_vol"
+  )
 
+# recorremos todas las combinaciones posibles 
 lm_eval_first = "lmClose = lm(btc_close~ eth_open "
 lm_eval_end = ", dataprice.test)"
-lm_eval = paste(lm_eval_first,lm_eval,lm_eval_end)
+
+pred.dataprice = c()
+RMSE_dataprice = c()
+MAPE_dataprice = c()
+
+for (i in c(1:nrow(combinaciones_posibles))){
+  lm_eval = ""
+  for( variable in variables_lag[combinaciones_posibles[i,]==1]){
+    variable = paste("+ ", variable)
+    lm_eval = paste(lm_eval, variable)
+  }
+  lm_eval = paste(lm_eval_first,lm_eval,lm_eval_end)  
+  # se ejecuta una instancia d ajuste del lmClose
+  eval(parse(text=lm_eval))
+  pred.dataprice[length(pred.dataprice) + 1] = predict(lmClose, dataprice.test, interval = "prediction")
+  # RMSE
+  RMSE_dataprice[length(RMSE_dataprice) + 1] = sqrt(sum((pred.dataprice[,1] - dataprice.test$btc_close )^2)/length(dataprice.test$btc_close))
+  # MAPE
+  MAPE_dataprice[length(MAPE_dataprice) + 1] = MAPE(pred.dataprice[,1], dataprice.test$btc_close)
+  
+}
+
+lmClose = lm(btc_close~ eth_open   +  btc_close_lag2 +  btc_close_lag4 +  btc_close_lag5 , dataprice.test)
+lmClose = lm(btc_close~ eth_open   +  btc_close_lag2 +  btc_close_lag3 +  btc_close_lag4 +  btc_close_lag5 , dataprice.test)
+summary(lmClose)
+
 
 eval(parse(text=lm_eval))
-
+vif(lmClose)
 pred.dataprice <- predict(lmClose, dataprice.test, interval = "prediction")
 RMSE_dataprice = sqrt(sum((pred.dataprice[,1] - dataprice.test$btc_close )^2)/length(dataprice.test$btc_close))
 
@@ -66,7 +114,6 @@ lmClose = lm(btc_close~., data = dataprice.train)
 pred.dataprice <- predict(lmClose, dataprice.test, interval = "prediction")
 # residual  
 RMSE_dataprice = sqrt(sum((pred.dataprice[,1] - dataprice.test$btc_close )^2)/length(dataprice.test$btc_close))
-
 
 
 
