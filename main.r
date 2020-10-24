@@ -45,6 +45,14 @@ library(lubridate)
 library(nycflights13)
 library(ISLR)
 
+################
+# source files #
+################
+source("databaseMerge.R")
+
+
+
+
 ##################
 # cargamos datos #
 ##################
@@ -53,8 +61,7 @@ library(ISLR)
 # Bitcoin #
 ###########
 
-# daily bitcoin price 2020-10-20 to 2014-12-01 (2139 *  9)
-btc_price = read.csv("Coinbase_BTCUSD_d.csv")
+
 
 cor(bitcoin_price[,4:8])
 
