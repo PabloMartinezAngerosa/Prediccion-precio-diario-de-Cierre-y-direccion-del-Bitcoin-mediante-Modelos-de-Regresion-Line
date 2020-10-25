@@ -48,6 +48,7 @@ google_trends_bitcoin = google_trends_bitcoin %>% arrange(desc(index))
 DATABASE_COINS = data.frame(
   "btc_trend" = google_trends_bitcoin$bitcoin[2:233], 
   "btc_close" = btc_price$Close[1:232], 
+  "btc_open" = btc_price$Open[1:232],
   "eth_open"  = eth_price$Open[1:232], 
   "eth_vol"   = eth_price$Volume.ETH[2:233],
   "ltc_open"  = ltc_price$Open[1:232], 
@@ -65,17 +66,40 @@ DATABASE_COINS = data.frame(
   "btc_close_lag3" = btc_price$Close[4:235],
   "btc_close_lag4" = btc_price$Close[5:236],
   "btc_close_lag5" = btc_price$Close[6:237],
+  "btc_close_lag6" = btc_price$Close[7:238],
+  "btc_close_lag7" = btc_price$Close[8:239],
+  "btc_close_lag8" = btc_price$Close[9:240],
+  "btc_close_lag9" = btc_price$Close[10:241],
+  "btc_close_lag10" = btc_price$Close[11:242],
   "btc_vol_lag1" = btc_price$Volume.BTC[2:233],
   "btc_vol_lag2" = btc_price$Volume.BTC[3:234],
   "btc_vol_lag3" = btc_price$Volume.BTC[4:235],
   "btc_vol_lag4" = btc_price$Volume.BTC[5:236],
-  "btc_vol_lag5" = btc_price$Volume.BTC[6:237]
+  "btc_vol_lag5" = btc_price$Volume.BTC[6:237],
+  "btc_vol_lag6" = btc_price$Volume.BTC[7:238],
+  "btc_vol_lag7" = btc_price$Volume.BTC[8:239],
+  "btc_vol_lag8" = btc_price$Volume.BTC[9:240],
+  "btc_vol_lag9" = btc_price$Volume.BTC[10:241],
+  "btc_vol_lag10" = btc_price$Volume.BTC[11:242]
 )
 
 
-############
-# Renko DB #
-############
+################################
+# Base de datos para logistico #
+################################
+
+# Buscamos en el momento n, si la diferencia del open y close, es positiva (Up) o negativa (Down)
+
+price_direction = c()
+
+for(i in 1:nrow(DATABASE_COINS)){
+  price_direction[i] = if((DATABASE_COINS[i,]$btc_close - DATABASE_COINS[i,]$btc_open) >= 0){ "Up"} else{ "Down"}
+}
+
+DATABASE_DIRECTION = cbind(DATABASE_COINS,price_direction)
+
+
+
 
 
 
