@@ -1,10 +1,7 @@
-#################################################################################
+##########################################################
+#Deveolped by Pablo Martinez Angerosa - Vanessa Alcalde  #
+##########################################################
 
-        ##########################################################
-        #Deveolped by Pablo Martinez Angerosa - Vanessa Alcalde  #
-        ##########################################################
-
-#################################################################################
 
 
 ############
@@ -12,6 +9,7 @@
 ############
 
 library(tidyverse)
+
 
 #############
 # databases #
@@ -97,6 +95,8 @@ for(i in 1:nrow(DATABASE_COINS)){
 }
 
 DATABASE_DIRECTION_Buffer = cbind(DATABASE_COINS,price_direction)
+
+# Seleccionamos solo un grupo pre seleccionadas de variables
 DATABASE_DIRECTION = data.frame(
   "btc_trend"      = DATABASE_DIRECTION_Buffer$btc_trend,
   "btc_close_lag1" = DATABASE_DIRECTION_Buffer$btc_close_lag1,
