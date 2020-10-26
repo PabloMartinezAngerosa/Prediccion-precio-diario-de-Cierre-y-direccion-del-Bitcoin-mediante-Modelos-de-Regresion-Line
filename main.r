@@ -22,6 +22,7 @@ library(glmnet)
 library(stats)
 library(boot)
 library(glmulti)
+library(car)
 
 ################
 # Source files #
@@ -178,7 +179,6 @@ for (i in c(1:total_combinaciones)){
 
     matrix_eval = paste(ridge_eval_model,eval,ridge_eval_model_end)
     eval(parse(text=matrix_eval))
-    sqrt(mean((dataprice.test$btc_close - predict(ridge_fit, s = opt_lambda, newx = test_matrix))^2))
     # RMSE
     RMSE_ridge_dataprice[length(RMSE_ridge_dataprice) + 1] = sqrt(mean((dataprice.test$btc_close - predict(ridge_fit, s = opt_lambda, newx = test_matrix))^2))
     # Guardamos el Modelo
@@ -215,11 +215,16 @@ infroGamPoly = data.frame("model" = models_fit_gam, "RMSE" = RMSE_gam_dataprice 
 
 # best fit multiple linear regression, 20 variables test!
 # RMSE 291.9711
-# lmClose = lm(btc_close~ btc_close_lag1 +  btc_close_lag2 +  btc_close_lag4 +  btc_vol_lag1 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_trend +  ltc_open , data=dataprice.train)
+lmClose = lm(btc_close~ btc_close_lag1 +  btc_close_lag2 +  btc_close_lag4 +  btc_vol_lag1 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_trend +  ltc_open , data=dataprice.train)
+pred.dataprice = predict(lmClose, dataprice.test, interval = "prediction")
+# RMSE
+RMSE = sqrt(sum((pred.dataprice[,1] - dataprice.test$btc_close )^2)/length(dataprice.test$btc_close))
+
 
 # best fit Ridge
-# ridge_fit = cv.glmnet(x = model.matrix(btc_close ~      btc_close_lag1 +  btc_close_lag2 +  btc_close_lag5 +  btc_vol_lag1 +  btc_vol_lag4 +  eth_vol , data = dataprice.train),
+#ridge_fit = cv.glmnet(x = model.matrix(btc_close ~      btc_close_lag1 +  btc_close_lag2 +  btc_close_lag5 +  btc_vol_lag1 +  btc_vol_lag4 +  eth_vol , data = dataprice.train),
 # RMSE 302.8086
+
 
 # best fit gam poly 4
 # RMSE 311.7134
@@ -244,30 +249,31 @@ infroGamPoly = data.frame("model" = models_fit_gam, "RMSE" = RMSE_gam_dataprice 
 # Analisis Inferencial (Modelos linales diagnostico) del modelo con menor RMSE #
 ################################################################################
 
+lmClose = lm(btc_close~ btc_close_lag1 +  btc_close_lag2 +  btc_close_lag4 +  btc_vol_lag1 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_trend +  ltc_open , data=dataprice.train)
+
+
 summary(lmClose)
+# btc_close_lag1 btc_close_lag2 presenta multicolinealidad
 vif(lmClose)
-# Stepwise regression model
-step.model <- stepAIC(lmClose, direction = "both", 
-                      trace = FALSE)
-summary(step.model) # Stepwise no da significativo 
 
 # rechaza normalidad , H_0 es normal
 shapiro.test(lmClose$residuals)
 
 # analizamos diagnostico residuos
 par(mfrow=c(2,2))
-plot(lmClose) # la 182 parece outlier
-# homogenidad en varianza ok
-ncvTest(step.model)
-bptest(step.model)
+plot(lmClose) # la 49 parece outlier
+
+# homogenidad en varianza / 1 rechaza y el otro no
+ncvTest(lmClose)
+bptest(lmClose)
 
 # outlier 
-outlierTest(step.model) # -> 182
+outlierTest(lmClose) # 49 es un outlier
 
 # influyentes 
-dffits(step.model)
-cooks.distance(step.model)
-sum(cooks.distance(step.model)>=(0.5))
+dffits(lmClose)
+cooks.distance(lmClose)
+sum(cooks.distance(lmClose)>=(0.5))
 
 
 
