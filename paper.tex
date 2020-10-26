@@ -1,6 +1,6 @@
 \documentclass[a4paper,12pt,twocolumn]{article}
 \date{ }
-\title{\textbf{Predicción del cierre diario y la dirección del precio del Bitcoin mediante Modelos Lineales}}
+\title{\textbf{Predicción del precio diario de Cierre y dirección del Bitcoin mediante Modelos de Regresión Lineal Múltiple y Logísticos. }}
 \author{Pablo Martinez Angerosa, Vanessa Alcalde}
 
 \newtheorem{dfn}{Definición}
@@ -8,29 +8,25 @@
 \renewcommand{\abstractname}{Resumen}
 \renewcommand{\refname}{Bibliografía}
 \renewcommand{\tablename}{Tabla} 
-
 \usepackage{booktabs,xcolor,siunitx,amsmath }
 \definecolor{lightgray}{gray}{0.9}
 
 \begin{document}
 
 
-\onecolumn
-
+\setlength{\columnsep}{0.8cm}
+% now make the abstract span both columns
+\twocolumn[
 \maketitle
-\begin{abstract}
-Vivimos en una época donde los cambios suceden en forma vertiginosa. Kurzweil\cite{RayKurzweil} uno de los futuristas tecnológicos mas impresionantes de nuestros tiempos, definió la realidad de la tecnología de la información como algo que sucede en forma exponencial. Actualmente grandes empresas tecnológicas de vanguardia junto al apoyo de inversores visionarios se encuentran pujando por la lucha de la supremacía cuántica y el despegue definitivo de la computación cuántica junto a el  acelerado poder computacional que esta conlleva. Ante todos estos cambios venideros es necesario preguntar y analizar ¿cuanta información vamos a ser capaces de crear? Y sobre todo, en tal caso, ¿bajo que condiciones la vamos a crear?. Si lo hacemos en la forma correcta, como tal “cambio de paradigma”~\cite{LaSingularidad} lo define, de un modo: protegido, público y distribuido,  no hay duda que estaremos creando el alicate que desmantele el alambre de púas alrededor de la propiedad intelectual~\cite{ManifestoCriptoAnarquista}.
-\begin{quotation}
-“” los hombres no se hacen a partir de victorias fáciles, sino en base a grandes derrotas”
-\begin{flushright}
-{\it - Sir Ernest Henry }
-\end{flushright}
-\end{quotation}
 
+\begin{abstract}{
+En 2008 Satoshi Nakamoto presentó una tecnología revolucionaria llamada Bitcoin. En evolución constante, el Bitcoin ya forma parte del interés diario de inversores y el mundo de la tecnología. Aquí presentamos una investigación que mediante  la comparación de distintas técnicas de Machine Learning (Linear Models, Ridge, GAM, Logistic) establece a los modelos de regresión lineal y logística como la opción candidata para la predicción del precio de Bitcoin. 
+\vspace{1.0cm}} 
 \end{abstract}
+]
+
 \vspace{1.0cm}
 
-\twocolumn
 
 \section{Introducción}
  Satoshi Nakamoto en 2008 presentó una tecnología revolucionaria\cite{Satoshi}, que cambiaría la historia de la humanidad por siempre, mediante la publicación de un artículo que describía un sistema P2P (peer-to-peer) de dinero digital, llamado Bitcoin. 
@@ -45,19 +41,19 @@ Para esto se utilizaron modelos de regresión dado que la variable de interés p
 
 Existen actualmente diversos papers para la predicción del precio del Bitcoin, pero comparado con predicciones tradicionales de Stock Market esta sigue siendo un área inexplorada con mucho potencial y margen de investigación. La lectura de estos papers fue fundamental para la elección de variables y la selección de las técnicas aplicadas~\cite{mainDriversBitcoin}.
 
-En la segunda sección de este paper describimos los modelos utilizados, en la tercer sección detallamos la obtención y tratamiento de los datos, en la cuarta sección presentamos los resultados y finalmente en la quinta sección mostramos las conclusiones de esta investigación y un breve enfoque de trabajos a futuro.
+En la segunda sección de este paper detallamos la obtención y tratamiento de los datos, en la tercer sección describimos los modelos utilizados, en la cuarta sección presentamos los resultados y finalmente en la quinta sección mostramos las conclusiones de esta investigación y un breve enfoque de trabajos a futuro.
 
 
 
 \section{Datos}
 \subsection{Descripción de los datos}
 
-Para la construcción de la base de datos utilizamos los datos diarios del opening price, closing price, volumen transactions,  provistos por la web Cryptodatadownload \footnote{https://www.cryptodatadownload.com}  que mantiene actualizada las bases de precios diarios de las principales criptomenadas y los principales exchanges. Para esta investigación se utilizaron los datos del exchange Coinbase que es considerado uno de los exchanges  mas seguro y estable por la comunidad cripto, el cual permite la comercialización y respaldo de criptomonedas como Bitcoin, Ethereum y cuya sede se encuentra basada en USA. 
+Para la construcción de la base de datos utilizamos los datos diarios del opening price, closing price, volumen transactions,  provistos por Cryptodatadownload\footnote{https://www.cryptodatadownload.com}  que mantiene actualizada las bases de precios diarios de las principales criptomenadas y los principales exchanges. Para esta investigación se utilizaron los datos del exchange Coinbase\footnote{https://www.coinbase.com} que es considerado uno de los exchanges  más seguro y estable por la comunidad cripto, el cual permite la comercialización y respaldo de criptomonedas como Bitcoin, Ethereum y cuya sede se encuentra basada en USA. 
 
 Se utilizaron los registros diarios en dolares americanos (USD)  de las criptomonedas Bitcoin(BTC), Ethereum(ETH), Litecoin(LTC), Bitcoin Cash(BCH), Ethereum Classic(ETC), Chainlink(LINK) y  Augur (REP). 
  
 
-También se utilizaron los datos diarios provistos en Google Trends \footnote{https://trends.google.com/trends }que reflejan el grado de interés diario de la búsqueda de la palabra clave Bitcoin en el buscador de Google, siendo este el principal motor de búsqueda en la actualidad. El índice que provee este dataset mide el interés relativo de una búsqueda en una región dada y un intervalo de tiempo determinado. Según las explicaciones de Google en su web un valor de 100 significa un pico en la popularidad del termino buscado, un valor de 50 significa que el termino es medianamente popular. Un resultado de 0 significa que no hay búsquedas suficientes en ese termino. 
+También se utilizaron los datos diarios provistos en Google Trends \footnote{https://trends.google.com/trends }que reflejan el grado de interés diario de la búsqueda de la palabra clave Bitcoin en el buscador de Google, siendo este el principal motor de búsqueda en la actualidad. El índice que provee este dataset mide el interés relativo de una búsqueda en una región dada y un intervalo de tiempo determinado. Según las explicaciones de Google en su web un valor de 100 significa un pico en la popularidad del término buscado, un valor de 50 significa que el término es medianamente popular. Un resultado de 0 significa que no hay búsquedas suficientes en ese término. 
 
 \subsection{Preparación de los datos}
 
@@ -67,7 +63,7 @@ Todas las bases provistas por Cryptodatadownload se encuentran en formato de arc
 
 Para armar la variable de Google Trends fue necesario la implementación recursiva de la descarga de la base en distintos frames de tiempo para una unión posterior  de los datos. Esto es debido a que la información diaria provista por Google tiene un marco de ventana de dos meses. 
 
-La base se estructuro de modo de tener un conjunto de entradas $X$ y salidas $Y$ con una dependencia temporal. La variable de predicción $Y$ corresponde al $Close$ del precio del Bitcoin en el tiempo $n$. Las entradas correspondientes a $X$ se encuentran en diversos tiempo del pasado. 
+La base se estructuró de modo de tener un conjunto de entradas $X$ y salidas $Y$ con una dependencia temporal. La variable de predicción $Y$ corresponde al $Close$ del precio del Bitcoin en el tiempo $n$. Las entradas correspondientes a $X$ se encuentran en diversos tiempo del pasado. 
 
 Todos los $Open$ de precios se encuentran en el mismo tiempo $n$ que se quiere predecir, ya que para realizar la predicción es información que existe en ese momento. 
 
@@ -102,7 +98,7 @@ btc\_close_i  =     \beta_0 + \beta_1 btc\_close\_lag1_i
 \label{eq:modelo}
 \end{equation}
 
-En la ecuación $(2)$ se presenta el modelo de regresión lineal múltiple que es el que logro mejor performance de predicción entre todos los modelos evaluados. La variable explicada $Close$ se predice por una combinación lineal de 3 $lags$ de $Close$ ($lag1$,$lag2$,$lag4$), 3 $lags$ del $Volume$ ($lag1$,$lag3$,$lag4$), la variable correspondiente a la tendencia relativa de busqueda del termino “Bitcoin” en el buscador de Google y el precio del $Open$ de la criptomoneda Lite Coin ($LTC$).
+En la ecuación $(2)$ se presenta el modelo de regresión lineal múltiple que es el que logró mejor performance de predicción entre todos los modelos evaluados. La variable explicada $Close$ se predice por una combinación lineal de 3 $lags$ de $Close$ ($lag1$,$lag2$,$lag4$), 3 $lags$ del $Volume$ ($lag1$,$lag3$,$lag4$), la variable correspondiente a la tendencia relativa de busqueda del termino “Bitcoin” en el buscador de Google y el precio del $Open$ de la criptomoneda Lite Coin ($LTC$).
 
 Para encontrar el modelo con mejor performance se construyó un algoritmo de fuerza bruta que evalúa secuencialmente una a una todas las posibles combinaciones de variables para generar un modelo de predicción. Este modelo se corrió en distintas combinaciones fijadas manualmente (por intento y error) de posibles grupos de variables, ya que el orden de todas las combinaciones es de $2^n$ para $n$ opciones de variables. Y en $n>20$ el algoritmo se vuelve incomputable.
 
@@ -112,7 +108,7 @@ Para encontrar el modelo con mejor performance se construyó un algoritmo de fue
 
 Para evaluar la performance de los distintos modelos de predicción se utilizó la medida de error $RMSE$ como se ve en la ecuación (3) donde $y_i$ representa las predicciones y $f_i$ los valores reales. Se busca minimizar el $RMSE$.
 
-Para la predicción logística de la dirección del precio $Close$ del Bitcoin se utiliza el mismo modelo presentado en la ecuación (2) cambiando la variable $y_i$ explicada por
+Para la predicción logística de la dirección del precio $Close$ del Bitcoin se utilizan las mismas variables que el modelo presentado en la ecuación (2) cambiando la variable $y_i$ explicada por
 las direcciones del $Close$.
 
 El dataset se dividio aleatoriamente, en una muestra de entrenamiento del $30\%$ y una muestra de testeo del $70\%$.
@@ -123,37 +119,37 @@ El objetivo de este paper es evaluar la predicción del precio  $Close$ del Bitc
 
 \begin{table}[!hbt]
 \centering
-\caption{Resultados de predicción para el precio $Close$ de Bitcoin }
+\caption{Resultados de RMSE para el precio $Close$ de Bitcoin }
 
 \begingroup\setlength{\fboxsep}{0pt}
 \colorbox{lightgray}{%
-\begin{tabular}{|l|l|c|}
-\hline Algoritmo de predicción & RMSE & $R^2$ \\
-\hline RLM & 291.971 & 0.99\\
-\hline Regresión de Ridge & 302.808 & 0.99 \\
-\hline $GAM$ Poly 2   & 295.932 & 0.99 \\
-\hline $GAM$ Poly 3   & 307.602 & 0.99 \\
-\hline $GAM$ Poly 4   & 311.713 & 0.99 \\
+\begin{tabular}{|l|l|}
+\hline Algoritmo de predicción & RMSE \\
+\hline Regresión Lineal Múltiple & 291.971 \\
+\hline Regresión Ridge & 302.808 \\
+\hline $GAM$ Poly 2   & 295.932 \\
+\hline $GAM$ Poly 3   & 307.602 \\
+\hline $GAM$ Poly 4   & 311.713 \\
 \hline
 \end{tabular}%
 }\endgroup
 \end{table}
 
-La Tabla 1, muestra la performance de cada uno de los modelos seleccionados para las distintas técnicas empleadas (Regresión Lineal Multiple, Regresión Ridge, GAM Poly). En este caso el modelo seleccionado para la técnica clásica de Regresión Lineal Multiple es el que logra mejores resultados. Esto concuerda con la literatura existente, y a la vez la tabla muestra, como la felxibilización del algoritmo, no necesariamente arroja mejores resultados. 
+La Tabla 1, muestra la performance de cada uno de los modelos seleccionados por el algoritmo de fuerza bruta para las distintas técnicas empleadas (Regresión Lineal Multiple, Regresión Ridge, GAM Poly). En este caso el modelo seleccionado para la técnica clásica de Regresión Lineal Múltiple es el que logra mejores resultados. Esto concuerda con la literatura existente, y a la vez la tabla muestra, como la flexibilización del algoritmo, no necesariamente arroja mejores resultados. 
 
 
-En cuanto a la predicción logística de la dirección del precio $Close$ del Bitcoin, el modelo seleccionado  logra un  grado de sensibilidad del $68,9\%$ en la tendencia alcista. Es decir si el algoritmo predice una suba, este acierta el $68,9\%$ de las veces. Sin embargo en términos de especificidad el modelo no muestra una gran performance ya que presenta un $50\%$. Se probaron modelos más complejos con interacciones resultantes del algoritmo genético GLMULTI, que lograban una mejor performance de sensibilidad, pero debido a la complejidad del modelo resultante, por parsimonia se selecciono el modelo con un $68.9\%$.
+En cuanto a la predicción logística de la dirección del precio $Close$ del Bitcoin, el modelo seleccionado  logra un  grado de sensibilidad del $56\%$ en la tendencia alcista. Es decir si el algoritmo predice una suba, este acierta el $56\%$ de las veces. En términos de especificidad el modelo muestra una performance del $60,53\%$. Se probaron modelos más complejos con interacciones resultantes del algoritmo genético GLMULTI, pero no mostraron una mejor performance. 
 
 
 \section{Conclusiones}
 
-Estos resultados sugieren que modelos de predicción basados en regresión lineal múltiple  pueden proponerse como solución a la predicción del precio del Bitcoin y los modelos de regresión lineal logística pueden ser una solución para la predicción de la dirección del precio alcista.
+Estos resultados sugieren que modelos de predicción basados en regresión lineal múltiple  pueden proponerse como solución a la predicción del precio del Bitcoin y los modelos de regresión lineal logística pueden ser una solución para la predicción de la dirección del precio.
 
 A futuro se plantea la posibilidad de utilizar otros algoritmos de Machine Learning, como SVM, Random Forest, Boosting, Arboles de clasificación y regresión y Redes Neuronales.
 
-También la amplitud en variables seleccionadas, incluyendo algunas como Twitter Sentiment Analysis del Bitcoin, y otras variables que explican el interés del Bitcoin como la dificultad del minning para Bitcoin y otras que variables que se sugieren en la literatura.
+También evaluar nuevas variables para el modelo, incluyendo algunas como Twitter Sentiment Analysis del Bitcoin, y otras variables que se sugieren en la literatura como el índice de dificultad del minning para Bitcoin.
 
-Así mismo se plantea la posibilidad de utilizar un algoritmo más avanzado de selección de variables basado en tecnología de algoritmos genéticos o reinforcement learning donde se busque la optimización del RMSE en el algoritmo. 
+Así mismo se plantea la posibilidad de utilizar un algoritmo más avanzado de selección de variables basado en la tecnología de algoritmos genéticos o reinforcement learning donde se efectué la optimización del RMSE en la búsqueda del mejor modelo dentro del algoritmo. 
 
 %
 \begin{thebibliography}{0000}
