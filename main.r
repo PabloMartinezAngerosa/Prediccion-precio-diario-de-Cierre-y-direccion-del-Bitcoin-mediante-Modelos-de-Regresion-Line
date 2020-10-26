@@ -87,8 +87,7 @@ combinaciones_posibles = crossing(
    var12 = 0:1,
    var13 = 0:1, 
    var14 = 0:1,
-   var15 = 0:1,
-   var16 = 0:1
+   var15 = 0:1
    # var17 = 0:1, 
    # var18 = 0:1,
    # var19 = 0:1,
@@ -97,25 +96,24 @@ combinaciones_posibles = crossing(
 
 variables_lag = c(
   "btc_trend", 
-  "btc_open",
   "btc_close_lag1",
   "btc_close_lag2",
   "btc_close_lag3",
   "btc_close_lag4",
   "btc_close_lag5",
-  "btc_close_lag6",
-  "btc_close_lag7",
-  "btc_close_lag8",
+  #"btc_close_lag6",
+  #"btc_close_lag7",
+  #"btc_close_lag8",
   "btc_vol_lag1",
   "btc_vol_lag2",
   "btc_vol_lag3",
   "btc_vol_lag4",
   "btc_vol_lag5",
-  "btc_vol_lag6"
-  # "eth_open",
-  # "eth_vol", 
-  #  "ltc_open" , 
-  #  "ltc_vol"  , 
+  #"btc_vol_lag6"
+   "eth_open",
+   "eth_vol", 
+    "ltc_open" , 
+    "ltc_vol"  
   #  "bch_open"  , 
   #  "bch_vol"   ,
   #  "etc_open"  , 
@@ -230,11 +228,10 @@ info = data.frame("model" = models_fit, "RMSE" = RMSE_dataprice)
 infoRidge = data.frame("model" = models_fit_ridge, "RMSE" = RMSE_ridge_dataprice)
 infroGamPoly = data.frame("model" = models_fit_gam, "RMSE" = RMSE_gam_dataprice )
 
+
 # best fit multiple linear regression 16 variables test! (empate)
 # RMSE 291.9711
 # lmClose = lm(btc_close~      btc_close_lag1 +  btc_close_lag2 +  btc_close_lag4 +  btc_vol_lag1 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_trend +  ltc_open , data=dataprice.train)
-# 	lmClose = lm(btc_close~      btc_open +  btc_close_lag2 +  btc_close_lag4 +  btc_vol_lag1 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_trend +  ltc_open , data=dataprice.train)
-# lmClose = lm(btc_close~      btc_open +  btc_close_lag1 +  btc_close_lag2 +  btc_close_lag4 +  btc_vol_lag1 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_trend +  ltc_open , data=dataprice.train)
 
 # best fit multiple linar regression 
 # RMSE 293.9643
@@ -274,13 +271,16 @@ infroGamPoly = data.frame("model" = models_fit_gam, "RMSE" = RMSE_gam_dataprice 
 # # Probamos 4 instancias
 # RMSE_dataprice_bestmodel = c()
 # MAPE_dataprice_bestmodel = c()
+# 
+# 
 # cantidad_dias = ancho_ventana_prediccion
+# 
 # 
 # for(index in 0:3){
 #   indice = index*cantidad_dias
 #   dataprice.train = database_coins[(ancho_ventana_prediccion + 1 + indice ): (ancho_ventana_prediccion + 1 + ancho_ventana_entrenamiento + indice),]
 #   dataprice.test = database_coins[( 1 + indice ):(ancho_ventana_prediccion+ indice),]
-#   lmClose = lm(btc_close~      btc_close_lag1 +  btc_vol_lag1 , data=dataprice.train)
+#   lmClose = lm(btc_close~      btc_open +  btc_close_lag1 +  btc_close_lag2 +  btc_close_lag4 +  btc_vol_lag1 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_trend +  ltc_open , data=dataprice.train)
 #   pred.dataprice = predict(lmClose, dataprice.test, interval = "prediction")
 #   # RMSE
 #   RMSE_dataprice_bestmodel[length(RMSE_dataprice_bestmodel) + 1] = sqrt(sum((pred.dataprice[,1] - dataprice.test$btc_close )^2)/length(dataprice.test$btc_close))
@@ -901,7 +901,8 @@ dataprice.test = DATABASE_DIRECTION[1:floor(length(DATABASE_DIRECTION$price_dire
 #	lmClose = lm(btc_close~      btc_close_lag1 +  btc_close_lag2 , data=dataprice.train)
 
 #  btc_close_lag1 +  btc_close_lag2 +  btc_close_lag3 +  btc_close_lag4 +  btc_close_lag5 +  btc_vol_lag2 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_vol_lag5 +  eth_open +  eth_vol
-glm.fits = glm(price_direction ~ btc_close_lag1 +  btc_close_lag2 +  btc_close_lag3 +  btc_close_lag4 +  btc_close_lag5 +  btc_vol_lag2 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_vol_lag5 +  eth_open +  eth_vol,data=dataprice.train ,family=binomial )
+# btc_close_lag1 +  btc_close_lag2 +  btc_close_lag4 +  btc_vol_lag1 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_trend +  ltc_open
+glm.fits = glm(price_direction ~      btc_close_lag1 +  btc_close_lag2 +  btc_close_lag3 +  btc_close_lag4 +  btc_close_lag5 +  btc_vol_lag2 +  btc_vol_lag3 +  btc_vol_lag4 +  btc_vol_lag5 +  eth_open +  eth_vol , data=dataprice.train ,family=binomial )
 glm.probs = predict(glm.fits,dataprice.test, type="response")
 
 glm.pred = rep("Down",length(dataprice.test$price_direction))
@@ -910,7 +911,7 @@ table(glm.pred ,dataprice.test$price_direction)
 
 
 glm_fit3 = glmulti(
-  y = Today ~ .*.,
+  y = price_direction ~ .,
   data =  dataprice.train,
   family = binomial,
   method = "g",
@@ -929,9 +930,9 @@ fit = glm_fit3@objects[[1]]
 
 glm.probs = predict(fit,dataprice.test, type="response")
 
-glm.pred = rep("Down",length(dataprice.test$Today))
+glm.pred = rep("Down",length(dataprice.test$price_direction))
 glm.pred[glm.probs >.5] = "Up"
-table(glm.pred ,dataprice.test$Today)
+table(glm.pred ,dataprice.test$price_direction)
 
 
 
@@ -941,5 +942,33 @@ table(glm.pred ,dataprice.test$Today)
 # betterDates <- as.Date(dates, "%B %d %Y")
 # dates <- c("05/27/84", "07/07/05", "08/17/20")
 # betterDates <- as.Date(dates, "%m/%d/%y")
+
+
+# price_direction ~ 1 + btc_trend + btc_close_lag1 + btc_close_lag2 + 
+#   btc_close_lag3 + btc_close_lag4 + btc_close_lag5 + btc_vol_lag1 + 
+#   btc_vol_lag2 + btc_vol_lag3 + btc_vol_lag4 + btc_vol_lag5 + 
+#   eth_open + eth_vol + ltc_open + ltc_vol + btc_close_lag2:btc_trend + 
+#   btc_close_lag2:btc_close_lag1 + btc_close_lag3:btc_close_lag1 + 
+#   btc_close_lag4:btc_close_lag1 + btc_close_lag4:btc_close_lag2 + 
+#   btc_close_lag5:btc_close_lag1 + btc_close_lag5:btc_close_lag2 + 
+#   btc_close_lag5:btc_close_lag4 + btc_vol_lag1:btc_close_lag1 + 
+#   btc_vol_lag1:btc_close_lag4 + btc_vol_lag2:btc_trend + btc_vol_lag2:btc_vol_lag1 + 
+#   btc_vol_lag3:btc_trend + btc_vol_lag3:btc_close_lag3 + btc_vol_lag3:btc_vol_lag1 + 
+#   btc_vol_lag3:btc_vol_lag2 + btc_vol_lag4:btc_close_lag1 + 
+#   btc_vol_lag4:btc_close_lag3 + btc_vol_lag4:btc_close_lag4 + 
+#   btc_vol_lag4:btc_close_lag5 + btc_vol_lag4:btc_vol_lag2 + 
+#   btc_vol_lag4:btc_vol_lag3 + btc_vol_lag5:btc_trend + btc_vol_lag5:btc_close_lag1 + 
+#   btc_vol_lag5:btc_close_lag3 + btc_vol_lag5:btc_close_lag4 + 
+#   btc_vol_lag5:btc_close_lag5 + btc_vol_lag5:btc_vol_lag3 + 
+#   btc_vol_lag5:btc_vol_lag4 + eth_open:btc_trend + eth_open:btc_close_lag2 + 
+#   eth_open:btc_close_lag3 + eth_open:btc_vol_lag2 + eth_open:btc_vol_lag4 + 
+#   eth_vol:btc_trend + eth_vol:btc_close_lag1 + eth_vol:btc_close_lag2 + 
+#   eth_vol:btc_vol_lag1 + eth_vol:btc_vol_lag2 + eth_vol:btc_vol_lag5 + 
+#   ltc_open:btc_trend + ltc_open:btc_close_lag4 + ltc_open:btc_vol_lag1 + 
+#   ltc_open:btc_vol_lag2 + ltc_open:btc_vol_lag3 + ltc_open:btc_vol_lag5 + 
+#   ltc_vol:btc_trend + ltc_vol:btc_close_lag3 + ltc_vol:btc_close_lag4 + 
+#   ltc_vol:btc_vol_lag1 + ltc_vol:btc_vol_lag3
+
+
 
 

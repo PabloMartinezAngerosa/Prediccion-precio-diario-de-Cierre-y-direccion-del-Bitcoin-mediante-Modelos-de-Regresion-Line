@@ -96,8 +96,25 @@ for(i in 1:nrow(DATABASE_COINS)){
   price_direction[i] = if((DATABASE_COINS[i,]$btc_close - DATABASE_COINS[i,]$btc_open) >= 0){ "Up"} else{ "Down"}
 }
 
-DATABASE_DIRECTION = cbind(DATABASE_COINS,price_direction)
-
+DATABASE_DIRECTION_Buffer = cbind(DATABASE_COINS,price_direction)
+DATABASE_DIRECTION = data.frame(
+  "btc_trend"      = DATABASE_DIRECTION_Buffer$btc_trend,
+  "btc_close_lag1" = DATABASE_DIRECTION_Buffer$btc_close_lag1,
+  "btc_close_lag2" = DATABASE_DIRECTION_Buffer$btc_close_lag2,
+  "btc_close_lag3" = DATABASE_DIRECTION_Buffer$btc_close_lag3,
+  "btc_close_lag4" = DATABASE_DIRECTION_Buffer$btc_close_lag4,
+  "btc_close_lag5" = DATABASE_DIRECTION_Buffer$btc_close_lag5,
+  "btc_vol_lag1"   = DATABASE_DIRECTION_Buffer$btc_vol_lag1,
+  "btc_vol_lag2"   = DATABASE_DIRECTION_Buffer$btc_vol_lag2,
+  "btc_vol_lag3"   = DATABASE_DIRECTION_Buffer$btc_vol_lag3,
+  "btc_vol_lag4"   = DATABASE_DIRECTION_Buffer$btc_vol_lag4,
+  "btc_vol_lag5"   = DATABASE_DIRECTION_Buffer$btc_vol_lag5,
+  "eth_open"       = DATABASE_DIRECTION_Buffer$eth_open,
+  "eth_vol"        = DATABASE_DIRECTION_Buffer$eth_vol,
+  "ltc_open"       = DATABASE_DIRECTION_Buffer$ltc_open, 
+  "ltc_vol"        = DATABASE_DIRECTION_Buffer$ltc_vol,
+  "price_direction"= DATABASE_DIRECTION_Buffer$price_direction
+)
 
 
 
