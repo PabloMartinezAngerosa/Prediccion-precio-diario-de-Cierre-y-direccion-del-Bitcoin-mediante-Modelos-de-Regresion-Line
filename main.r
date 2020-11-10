@@ -23,6 +23,7 @@ library(stats)
 library(boot)
 library(glmulti)
 library(car)
+library(tree)
 
 ################
 # Source files #
@@ -113,13 +114,20 @@ ridge_eval_model_end = ", data = dataprice.test)"
 gam_eval_first = "gam_fit = lm(btc_close~"
 gam_eval_end = ", data=dataprice.train)"
 
+
+# Regression Tree
+regression_tree_eval_first = "tree_fit = tree(formula =btc_close~"
+regression_tree_eval_end = ",data= database_coins, subset= dataprice.train)"
+
 RMSE_dataprice = c()
 RMSE_ridge_dataprice = c()
 RMSE_gam_dataprice = c()
+rRMSE_regression_tree_dataprice = c()
 MAPE_dataprice = c()
 models_fit = c()
 models_fit_ridge = c()
 models_fit_gam = c()
+models_fit_regression_tree_dataprice = c()
 total_combinaciones = nrow(combinaciones_posibles)
 
 # recorremos todas las combinaciones posibles #
@@ -195,6 +203,16 @@ for (i in c(1:total_combinaciones)){
     RMSE_gam_dataprice[length(RMSE_gam_dataprice) + 1] = sqrt(mean((dataprice.test$btc_close - predict(gam_fit, dataprice.test))^2))
     models_fit_gam[length(models_fit_gam) + 1] = gam_eval
     
+    ###################
+    # Regression Tree #
+    ###################
+    
+    regression_tree_eval = paste(regression_tree_eval_first,eval,regression_tree_eval_end)
+    eval(parse(text=regression_tree_eval))
+    # rRMSE
+    rRMSE_regression_tree_dataprice[length(rRMSE_regression_tree_dataprice) + 1] = sqrt(mean(((dataprice.test$btc_close - predict(tree_fit, dataprice.test))/dataprice.test$btc_close )^2))
+    models_fit_regression_tree_dataprice[length(models_fit_regression_tree_dataprice) + 1] = regression_tree_eval
+    
     # estado del algoritmo 
     print((i/total_combinaciones))
   }
@@ -205,8 +223,8 @@ for (i in c(1:total_combinaciones)){
 # El que tiene menor RMSE en cada dataframe es el algoritmo optimo para cada tipo de modelado #
 info = data.frame("model" = models_fit, "RMSE" = RMSE_dataprice)
 infoRidge = data.frame("model" = models_fit_ridge, "RMSE" = RMSE_ridge_dataprice)
-infroGamPoly = data.frame("model" = models_fit_gam, "RMSE" = RMSE_gam_dataprice )
-
+infoGamPoly = data.frame("model" = models_fit_gam, "RMSE" = RMSE_gam_dataprice )
+ingoRegressionTree = data.frame("model" = models_fit_regression_tree_dataprice, "rRMSE"=rRMSE_regression_tree_dataprice)
 
 #########################################################################
 # Resultados obtenidos de las pruebas con distintos grupos de variables #
