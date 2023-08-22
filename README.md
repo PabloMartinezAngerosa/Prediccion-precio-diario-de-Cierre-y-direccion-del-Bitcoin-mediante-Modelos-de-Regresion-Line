@@ -17,7 +17,9 @@ This repository houses code showcasing the application of Machine Learning techn
 
 For a detailed understanding of the research and its findings regarding the suitability of linear and logistic regression models for Bitcoin price prediction, refer to the original work:
 
-[Author(s). "Title of the Original Research."](https://github.com/PabloMartinezAngerosa/Prediccion-precio-diario-de-Cierre-y-direccion-del-Bitcoin-mediante-Modelos-de-Regresion-Line/blob/main/paper.pdf)
+[Vanessa Alcalde, Pablo Martinez Angerosa Prediccion del precio diario de Cierre y
+direccion del Bitcoin mediante Modelos de
+Regresion Lineal Multiple y Logısticos."](https://github.com/PabloMartinezAngerosa/Prediccion-precio-diario-de-Cierre-y-direccion-del-Bitcoin-mediante-Modelos-de-Regresion-Line/blob/main/paper.pdf)
 
 ## License
 
